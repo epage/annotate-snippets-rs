@@ -90,6 +90,7 @@ fn fixable_diagnostic() {
         .no_name()
         .primary_title("`os` imported but unused")
         .id("F401")
+        .footnote("[*]")
         .element(
             Snippet::source("import os\n")
                 .path("-")
@@ -101,7 +102,7 @@ Found 1 error.
 ";
 
     let expected_ascii = str![[r#"
-F401: `os` imported but unused
+F401[*]: `os` imported but unused
  --> -:1:8
   |
 1 | import os
@@ -118,7 +119,7 @@ Found 1 error.
     );
 
     let expected_unicode = str![[r#"
-F401: `os` imported but unused
+F401[*]: `os` imported but unused
   ╭▸ -:1:8
   │
 1 │ import os
