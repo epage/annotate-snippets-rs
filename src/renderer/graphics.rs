@@ -104,7 +104,7 @@ pub(crate) fn render_full_message(renderer: &Renderer, groups: Report<'_>) -> St
             let is_first = i == 0;
             match section {
                 PreprocessedElement::Message(title) => {
-                    let title_style = TitleStyle::Secondary;
+                    let title_style = TitleStyle::Message;
                     let buffer_msg_line_offset = buffer.num_lines();
                     render_title(
                         renderer,
@@ -341,7 +341,7 @@ fn render_title(
             ElementStyle::Level(title.level().level),
             ElementStyle::HeaderMsg,
         ),
-        TitleStyle::Secondary => {
+        TitleStyle::Message => {
             for _ in 0..max_line_num_len {
                 buffer.append(buffer_msg_line_offset, " ", ElementStyle::NoStyle);
             }
@@ -392,7 +392,7 @@ fn render_title(
         label_width += 2;
     }
 
-    let padding = " ".repeat(if title_style == TitleStyle::Secondary {
+    let padding = " ".repeat(if title_style == TitleStyle::Message {
         // The extra 3 ` ` is padding that's always needed to align to the
         // label i.e. `note: `:
         //
@@ -423,7 +423,7 @@ fn render_title(
     for (i, text) in title_str.split('\n').enumerate() {
         if i != 0 {
             buffer.append(buffer_msg_line_offset + i, &padding, ElementStyle::NoStyle);
-            if title_style == TitleStyle::Secondary
+            if title_style == TitleStyle::Message
                 && is_cont
                 && matches!(renderer.decor_style, DecorStyle::Unicode)
             {
@@ -2626,7 +2626,7 @@ pub(crate) struct UnderlineParts {
 enum TitleStyle {
     MainHeader,
     Header,
-    Secondary,
+    Message,
 }
 
 struct Hyperlink<D: fmt::Display> {
