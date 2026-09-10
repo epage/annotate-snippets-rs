@@ -64,9 +64,9 @@ pub(crate) fn render_full_message(renderer: &Renderer, groups: Report<'_>) -> St
         if let Some(title) = &group.title {
             let peek = message_iter.peek().map(|(_, s)| s);
             let title_style = if title.allows_styling {
-                TitleStyle::Header
+                TitleStyle::Secondary
             } else {
-                TitleStyle::MainHeader
+                TitleStyle::Primary
             };
             let buffer_msg_line_offset = buffer.num_lines();
             render_title(
@@ -88,7 +88,7 @@ pub(crate) fn render_full_message(renderer: &Renderer, groups: Report<'_>) -> St
                     max_line_num_len + 1,
                 );
             }
-            if peek.is_none() && title_style == TitleStyle::MainHeader && g == 0 && group_len > 1 {
+            if peek.is_none() && title_style == TitleStyle::Primary && g == 0 && group_len > 1 {
                 draw_col_separator_end(
                     renderer,
                     &mut buffer,
@@ -104,7 +104,7 @@ pub(crate) fn render_full_message(renderer: &Renderer, groups: Report<'_>) -> St
             let is_first = i == 0;
             match section {
                 PreprocessedElement::Message(title) => {
-                    let title_style = TitleStyle::Secondary;
+                    let title_style = TitleStyle::Message;
                     let buffer_msg_line_offset = buffer.num_lines();
                     render_title(
                         renderer,
@@ -303,7 +303,7 @@ fn render_short_message(renderer: &Renderer, groups: &[Group<'_>]) -> Result<Str
         &mut buffer,
         title,
         0, // No line numbers in short messages
-        TitleStyle::MainHeader,
+        TitleStyle::Primary,
         false,
         0,
     );
@@ -329,7 +329,7 @@ fn render_title(
     buffer_msg_line_offset: usize,
 ) {
     let (label_style, title_element_style) = match title_style {
-        TitleStyle::MainHeader => (
+        TitleStyle::Primary => (
             ElementStyle::Level(title.level().level),
             if renderer.short_message {
                 ElementStyle::NoStyle
@@ -337,11 +337,11 @@ fn render_title(
                 ElementStyle::MainHeaderMsg
             },
         ),
-        TitleStyle::Header => (
+        TitleStyle::Secondary => (
             ElementStyle::Level(title.level().level),
             ElementStyle::HeaderMsg,
         ),
-        TitleStyle::Secondary => {
+        TitleStyle::Message => {
             for _ in 0..max_line_num_len {
                 buffer.append(buffer_msg_line_offset, " ", ElementStyle::NoStyle);
             }
@@ -392,7 +392,7 @@ fn render_title(
         label_width += 2;
     }
 
-    let padding = " ".repeat(if title_style == TitleStyle::Secondary {
+    let padding = " ".repeat(if title_style == TitleStyle::Message {
         // The extra 3 ` ` is padding that's always needed to align to the
         // label i.e. `note: `:
         //
@@ -423,7 +423,7 @@ fn render_title(
     for (i, text) in title_str.split('\n').enumerate() {
         if i != 0 {
             buffer.append(buffer_msg_line_offset + i, &padding, ElementStyle::NoStyle);
-            if title_style == TitleStyle::Secondary
+            if title_style == TitleStyle::Message
                 && is_cont
                 && matches!(renderer.decor_style, DecorStyle::Unicode)
             {
@@ -2624,9 +2624,9 @@ pub(crate) struct UnderlineParts {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum TitleStyle {
-    MainHeader,
-    Header,
+    Primary,
     Secondary,
+    Message,
 }
 
 struct Hyperlink<D: fmt::Display> {
