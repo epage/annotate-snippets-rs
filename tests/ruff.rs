@@ -34,7 +34,6 @@ fn example_code() {
                     "\
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, A):
-        if not isinstance(other, A):
             return False
         return <logic to compare two `A` instances>
 ",
@@ -56,7 +55,6 @@ help: It is recommended for `__eq__` to work with arbitrary objects, for example
   |
   | def __eq__(self, other: object) -> bool:
   |         if not isinstance(other, A):
-  |         if not isinstance(other, A):
   |             return False
   |         return <logic to compare two `A` instances>
   |
@@ -77,7 +75,6 @@ help: This violates the Liskov Substitution Principle
 help: It is recommended for `__eq__` to work with arbitrary objects, for example:
   ╭▸ 
   │ def __eq__(self, other: object) -> bool:
-  │         if not isinstance(other, A):
   │         if not isinstance(other, A):
   │             return False
   │         return <logic to compare two `A` instances>
